@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Agent Swarms API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
+    ENVIRONMENT: str = Field("development", env="ENVIRONMENT")
 
     # Security
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
