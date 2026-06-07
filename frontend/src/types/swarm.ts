@@ -1,4 +1,4 @@
-// STUB — Implemented by: workstream/2c-crew-registry-ingestion
+// STUB-FILL — Implemented by: workstream/2c-crew-registry-ingestion
 export interface TaskTrace {
   id: string;
   agent: string;
