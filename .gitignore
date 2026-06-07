@@ -1,36 +1,97 @@
-﻿# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
 *.class
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
+*.so
+
+# Distribution / packaging
 .Python
-env/
-venv/
-.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Environments
 .env
 .env.*
 !.env.example
+.env.local
+.env.*.local
+.venv
+venv/
+ENV/
+env/
 
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-
-# Node / Frontend
+# Node/Vite (Frontend)
 node_modules/
 dist/
-.DS_Store
+dist-ssr/
+*.local
 
-# Editors
+# Editor settings
 .vscode/
 .idea/
+*.suo
+*.sln
+*.sw?
 *.swp
 *.swo
+
+# Local databases and vector stores
+chroma_dev_data/
+chroma_data/
+*.db
+
+# Workspace data except .gitkeep
+workspace/*
+!workspace/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
