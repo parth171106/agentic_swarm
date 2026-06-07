@@ -1,6 +1,16 @@
 # STUB-FILL — Implemented by: workstream/2b-llm-adapter-tools
 import asyncio
+import threading
+from typing import Any, List, Optional, Dict
+from pydantic import PrivateAttr
 from openai import AsyncOpenAI
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.outputs import ChatResult, ChatGeneration
+from langchain_core.callbacks import (
+    CallbackManagerForLLMRun,
+    AsyncCallbackManagerForLLMRun,
+)
 from backend.app.core.config import settings
 from backend.app.core.logging import get_logger
 from backend.app.core.circuit_breaker import (
@@ -14,14 +24,46 @@ from backend.app.memory.repository import SupabaseRepository
 logger = get_logger("llm_adapter")
 
 
-class LLMAdapter:
-    def __init__(self, model: str, temperature: float = 0.0, max_tokens: int = 512):
-        self.model = model
-        self.temperature = temperature
-        self.max_tokens = max_tokens
+def _run_async(coro):
+    result = []
+    exception = []
+
+    def target():
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            res = loop.run_until_complete(coro)
+            result.append(res)
+        except Exception as e:
+            exception.append(e)
+        finally:
+            loop.close()
+
+    thread = threading.Thread(target=target)
+    thread.start()
+    thread.join()
+
+    if exception:
+        raise exception[0]
+    return result[0]
+
+
+class LLMAdapter(BaseChatModel):
+    model: str
+    temperature: float = 0.0
+    max_tokens: int = 512
+
+    _clients: dict = PrivateAttr()
+
+    def __init__(
+        self, model: str, temperature: float = 0.0, max_tokens: int = 512, **kwargs
+    ):
+        super().__init__(
+            model=model, temperature=temperature, max_tokens=max_tokens, **kwargs
+        )
 
         # Instantiate fallback client layers
-        self.clients = {
+        self._clients = {
             "gemini": AsyncOpenAI(
                 api_key=settings.GEMINI_API_KEY,
                 base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -58,7 +100,7 @@ class LLMAdapter:
                     continue
 
             # 2. Attempt API Call
-            client = self.clients[provider]
+            client = self._clients[provider]
             try:
                 # 25 seconds timeout limit
                 response = await asyncio.wait_for(
@@ -112,3 +154,49 @@ class LLMAdapter:
         raise CircuitBreakerOpen(
             f"All LLM providers in chain failed. Last error: {str(last_error)}"
         )
+
+    @property
+    def _llm_type(self) -> str:
+        return "custom_llm_adapter"
+
+    def _format_messages(self, messages: List[BaseMessage]) -> List[Dict[str, str]]:
+        formatted = []
+        for msg in messages:
+            role = "user"
+            if msg.type == "system":
+                role = "system"
+            elif msg.type == "ai":
+                role = "assistant"
+            elif msg.type == "human":
+                role = "user"
+            formatted.append({"role": role, "content": msg.content})
+        return formatted
+
+    def _generate(
+        self,
+        messages: List[BaseMessage],
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        formatted = self._format_messages(messages)
+        coro = self.complete(formatted, trace_id="sync_run")
+        response_text = _run_async(coro)
+
+        message = AIMessage(content=response_text)
+        generation = ChatGeneration(message=message)
+        return ChatResult(generations=[generation])
+
+    async def _agenerate(
+        self,
+        messages: List[BaseMessage],
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        formatted = self._format_messages(messages)
+        response_text = await self.complete(formatted, trace_id="async_run")
+
+        message = AIMessage(content=response_text)
+        generation = ChatGeneration(message=message)
+        return ChatResult(generations=[generation])
