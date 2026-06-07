@@ -2,7 +2,7 @@
 Core application configuration.
 Loads settings from environment variables with validation.
 """
-import os
+
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
@@ -49,12 +49,13 @@ class Settings(BaseSettings):
     # Feature Flags
     MOCK_TOOLS: bool = Field(False, env="MOCK_TOOLS")
     REQUIRE_APPROVAL_RISK_LEVELS: list[str] = Field(
-        default_factory=lambda: ["high", "medium"],
-        env="REQUIRE_APPROVAL_RISK_LEVELS"
+        default_factory=lambda: ["high", "medium"], env="REQUIRE_APPROVAL_RISK_LEVELS"
     )
 
     # Rate Limits Config
-    RATE_LIMITS_CONFIG_PATH: str = Field("config/rate_limits.yaml", env="RATE_LIMITS_CONFIG_PATH")
+    RATE_LIMITS_CONFIG_PATH: str = Field(
+        "config/rate_limits.yaml", env="RATE_LIMITS_CONFIG_PATH"
+    )
 
     # Workspace
     WORKSPACE_DIR: str = Field("workspace", env="WORKSPACE_DIR")

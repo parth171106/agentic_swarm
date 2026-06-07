@@ -12,10 +12,14 @@ async def list_registered_crews():
 
 
 @router.post("/validate")
-async def validate_crew_definition(yaml_content: str, user_id: str = Depends(get_current_user)):
+async def validate_crew_definition(
+    yaml_content: str, user_id: str = Depends(get_current_user)
+):
     raise NotImplementedError()
 
 
 @router.post("/{id}")
-async def save_crew_definition(id: str, yaml_content: str, user_id: str = Depends(get_current_user)):
+async def save_crew_definition(
+    id: str, yaml_content: str, user_id: str = Depends(get_current_user)
+):
     raise NotImplementedError()

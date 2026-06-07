@@ -7,6 +7,7 @@ from backend.app.core.config import settings
 
 router = APIRouter(prefix="/health", tags=["health"])
 
+
 # Local helper to resolve Redis client injection
 async def get_redis():
     client = Redis.from_url(settings.REDIS_URL)
@@ -15,11 +16,12 @@ async def get_redis():
     finally:
         await client.aclose()
 
+
 @router.get("", response_model=HealthResponse)
 async def get_health(redis_client: Redis = Depends(get_redis)):
     """Verifies reachability of the database, Redis, ChromaDB, and APIs."""
     components = {}
-    
+
     # 1. Redis check
     try:
         await redis_client.ping()
@@ -31,7 +33,10 @@ async def get_health(redis_client: Redis = Depends(get_redis)):
     # Note: Using httpx directly to ping REST endpoint
     try:
         async with httpx.AsyncClient() as client:
-            res = await client.get(f"{settings.SUPABASE_URL}/rest/v1/", headers={"apikey": settings.SUPABASE_SERVICE_KEY})
+            res = await client.get(
+                f"{settings.SUPABASE_URL}/rest/v1/",
+                headers={"apikey": settings.SUPABASE_SERVICE_KEY},
+            )
             components["database"] = "up" if res.status_code == 200 else "down"
     except Exception:
         components["database"] = "down"
@@ -39,7 +44,9 @@ async def get_health(redis_client: Redis = Depends(get_redis)):
     # 3. ChromaDB check
     try:
         async with httpx.AsyncClient() as client:
-            res = await client.get(f"http://{settings.CHROMADB_HOST}:{settings.CHROMADB_PORT}/api/v1/heartbeat")
+            res = await client.get(
+                f"http://{settings.CHROMADB_HOST}:{settings.CHROMADB_PORT}/api/v1/heartbeat"
+            )
             components["chromadb"] = "up" if res.status_code == 200 else "down"
     except Exception:
         components["chromadb"] = "down"
@@ -47,7 +54,9 @@ async def get_health(redis_client: Redis = Depends(get_redis)):
     # 4. Gemini API check
     try:
         async with httpx.AsyncClient() as client:
-            res = await client.head("https://generativelanguage.googleapis.com/v1beta/openai/", timeout=3.0)
+            res = await client.head(
+                "https://generativelanguage.googleapis.com/v1beta/openai/", timeout=3.0
+            )
             components["gemini_api"] = "up" if res.status_code < 500 else "down"
     except Exception:
         components["gemini_api"] = "down"
@@ -79,11 +88,7 @@ async def get_health(redis_client: Redis = Depends(get_redis)):
     rate_limits = RateLimitStatus(
         gemini_tokens_used_today=0,
         groq_requests_used_today=0,
-        serper_searches_used_month=0
+        serper_searches_used_month=0,
     )
 
-    return HealthResponse(
-        status=status,
-        components=components,
-        rate_limits=rate_limits
-    )
+    return HealthResponse(status=status, components=components, rate_limits=rate_limits)

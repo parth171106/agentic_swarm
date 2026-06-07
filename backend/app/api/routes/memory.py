@@ -1,6 +1,6 @@
 # STUB — Implemented by: workstream/5a-memory-explorer
 from fastapi import APIRouter, Depends
-from backend.app.models.memory_models import MemorySearchResponse, MemorySearchResult
+from backend.app.models.memory_models import MemorySearchResponse
 from backend.app.core.dependencies import get_current_user
 
 router = APIRouter(prefix="/memory", tags=["memory"])

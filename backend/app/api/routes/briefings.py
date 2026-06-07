@@ -1,6 +1,5 @@
 # STUB — Implemented by: workstream/7-integration
 from fastapi import APIRouter, Depends
-from fastapi.responses import FileResponse
 from backend.app.core.dependencies import get_current_user
 
 router = APIRouter(prefix="/workspace", tags=["briefings"])

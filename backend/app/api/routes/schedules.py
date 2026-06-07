@@ -7,5 +7,7 @@ router = APIRouter(prefix="/swarms/schedule", tags=["schedules"])
 
 
 @router.post("", status_code=201)
-async def create_schedule(request: CreateScheduleRequest, user_id: str = Depends(get_current_user)):
+async def create_schedule(
+    request: CreateScheduleRequest, user_id: str = Depends(get_current_user)
+):
     raise NotImplementedError()

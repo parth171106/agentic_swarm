@@ -2,6 +2,7 @@
 Structured logging configuration for Agent Swarms.
 Provides JSON-formatted log output with trace_id context support.
 """
+
 import logging
 import json
 import sys
@@ -22,11 +23,27 @@ class JSONFormatter(logging.Formatter):
         # Attach extra fields (e.g. trace_id, swarm_run_id, agent_role)
         for key, value in record.__dict__.items():
             if key not in (
-                "name", "msg", "args", "levelname", "levelno",
-                "pathname", "filename", "module", "exc_info",
-                "exc_text", "stack_info", "lineno", "funcName",
-                "created", "msecs", "relativeCreated", "thread",
-                "threadName", "processName", "process", "message",
+                "name",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "message",
                 "taskName",
             ):
                 log_entry[key] = value

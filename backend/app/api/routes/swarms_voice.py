@@ -7,5 +7,7 @@ router = APIRouter(prefix="/swarms/voice", tags=["voice"])
 
 
 @router.post("", response_model=VoiceIngestResponse, status_code=202)
-async def upload_voice_objective(audio: UploadFile = File(...), user_id: str = Depends(get_current_user)):
+async def upload_voice_objective(
+    audio: UploadFile = File(...), user_id: str = Depends(get_current_user)
+):
     raise NotImplementedError()

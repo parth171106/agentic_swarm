@@ -5,7 +5,7 @@ Every tool must:
   2. Define `name`, `description`
   3. Implement `_run()` with the MOCK_TOOLS guard
 """
-import os
+
 from abc import ABC, abstractmethod
 
 

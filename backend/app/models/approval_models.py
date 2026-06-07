@@ -9,8 +9,8 @@ class ApprovalRequest(BaseModel):
     swarm_run_id: str
     tool_name: str
     proposed_payload: dict
-    risk_level: Literal['low', 'medium', 'high']
-    status: Literal['pending', 'approved', 'rejected', 'executed', 'failed']
+    risk_level: Literal["low", "medium", "high"]
+    status: Literal["pending", "approved", "rejected", "executed", "failed"]
     rejection_reason: str | None
     created_at: str
 
@@ -28,5 +28,5 @@ class RejectResponse(BaseModel):
 
 
 class ApprovalResult(BaseModel):
-    status: Literal['approved', 'rejected']
+    status: Literal["approved", "rejected"]
     rejection_reason: str | None = None
