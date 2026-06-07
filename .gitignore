@@ -83,7 +83,9 @@ dist-ssr/
 # Local databases and vector stores
 chroma_dev_data/
 chroma_data/
+chroma_db/
 *.db
+
 
 # Workspace data except .gitkeep
 workspace/*
